@@ -73,6 +73,7 @@ def cat_icon(category):
 
 
 def category_key(category):
+
     if category == "All Categories":
         return None
 
@@ -89,6 +90,10 @@ def category_key(category):
 st.html(
     """
     <style>
+
+    /* ========================================================
+       HOSPITAL HEADER
+       ======================================================== */
 
     .hospital-header {
         padding: 28px;
@@ -121,6 +126,11 @@ st.html(
         line-height: 1.6;
     }
 
+
+    /* ========================================================
+       SOURCE BOX
+       ======================================================== */
+
     .source-box {
         padding: 10px 14px;
         margin: 6px 0;
@@ -128,6 +138,11 @@ st.html(
         border-radius: 8px;
         background: rgba(20, 149, 138, 0.08);
     }
+
+
+    /* ========================================================
+       CONFIDENCE
+       ======================================================== */
 
     .confidence-box {
         padding: 7px 12px;
@@ -151,6 +166,109 @@ st.html(
     .low-confidence {
         background: #fde8e8;
         color: #b3261e;
+    }
+
+
+    /* ========================================================
+       FIXED CHAT INPUT
+       ======================================================== */
+
+    /*
+       Keep Streamlit chat input fixed at the bottom
+       while the page is being scrolled.
+    */
+
+    [data-testid="stChatInput"] {
+        position: fixed !important;
+
+        bottom: 20px !important;
+
+        /*
+           Keep the input inside the main content area,
+           instead of placing it over the sidebar.
+        */
+        left: calc(50% + 160px) !important;
+
+        transform: translateX(-50%) !important;
+
+        width: min(
+            900px,
+            calc(100vw - 380px)
+        ) !important;
+
+        z-index: 9999 !important;
+    }
+
+
+    /*
+       Make the actual chat input use the full width.
+    */
+
+    [data-testid="stChatInput"] > div {
+        width: 100% !important;
+    }
+
+
+    /*
+       Add extra bottom space to the page.
+       This prevents the last answer from being hidden
+       behind the fixed input.
+    */
+
+    [data-testid="stAppViewContainer"] .main .block-container {
+        padding-bottom: 140px !important;
+    }
+
+
+    /*
+       Make sure the input stays above other content.
+    */
+
+    [data-testid="stChatInput"] textarea {
+        position: relative !important;
+        z-index: 10000 !important;
+    }
+
+
+    /* ========================================================
+       RESPONSIVE DESIGN
+       ======================================================== */
+
+    /*
+       On smaller screens there is usually no visible
+       sidebar width to account for.
+    */
+
+    @media (max-width: 900px) {
+
+        [data-testid="stChatInput"] {
+
+            left: 50% !important;
+
+            width: calc(100vw - 40px) !important;
+
+            transform: translateX(-50%) !important;
+        }
+    }
+
+
+    /*
+       Extra adjustment for very small screens.
+    */
+
+    @media (max-width: 600px) {
+
+        [data-testid="stChatInput"] {
+
+            bottom: 10px !important;
+
+            width: calc(100vw - 20px) !important;
+        }
+
+        [data-testid="stAppViewContainer"] .main .block-container {
+
+            padding-bottom: 120px !important;
+        }
     }
 
     </style>
@@ -212,6 +330,7 @@ if not METADATA_PATH.exists():
 
 @st.cache_data
 def get_metadata():
+
     return load_metadata()
 
 
@@ -249,6 +368,7 @@ categories_found = sorted(
 )
 
 total_documents = len(documents)
+
 total_categories = len(categories_found)
 
 
@@ -298,7 +418,9 @@ try:
 except Exception:
 
     groq_api_key = ""
+
     groq_model = ""
+
     groq_ready = False
 
 
@@ -333,6 +455,7 @@ with st.sidebar:
             total_categories,
         )
 
+
     if groq_ready:
 
         st.success(
@@ -347,11 +470,13 @@ with st.sidebar:
             icon="⚠️",
         )
 
+
     st.divider()
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # CATEGORY BREAKDOWN
-    # --------------------------------------------------------
+    # ========================================================
 
     with st.expander(
         "📊 Category breakdown",
@@ -372,11 +497,13 @@ with st.sidebar:
                 f"{docs_count} document(s)"
             )
 
+
     st.divider()
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # FILTERS
-    # --------------------------------------------------------
+    # ========================================================
 
     st.subheader("🔎 Filters")
 
@@ -389,6 +516,7 @@ with st.sidebar:
         category_options,
     )
 
+
     document_options = [
         "All Documents"
     ] + get_documents_for_category(
@@ -400,9 +528,10 @@ with st.sidebar:
         document_options,
     )
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # RETRIEVAL SETTINGS
-    # --------------------------------------------------------
+    # ========================================================
 
     with st.expander(
         "⚙️ Advanced retrieval settings"
@@ -416,6 +545,7 @@ with st.sidebar:
             step=1,
         )
 
+
         similarity_threshold = st.slider(
             "Similarity threshold",
             min_value=0.0,
@@ -425,6 +555,7 @@ with st.sidebar:
             help="Higher values require stronger semantic matches.",
         )
 
+
         st.caption(
             "Embedding model:"
         )
@@ -433,6 +564,7 @@ with st.sidebar:
             EMBEDDING_MODEL_NAME.split("/")[-1],
             language=None,
         )
+
 
         if groq_ready:
 
@@ -445,11 +577,13 @@ with st.sidebar:
                 language=None,
             )
 
+
     st.divider()
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # CLEAR CHAT
-    # --------------------------------------------------------
+    # ========================================================
 
     if st.button(
         "🗑️ Clear chat history",
@@ -463,6 +597,7 @@ with st.sidebar:
         )
 
         st.rerun()
+
 
     st.caption(
         "🔒 Answers are grounded only in the hospital knowledge base."
@@ -587,7 +722,9 @@ def render_sources(sources):
 
         return
 
-    st.markdown("### 📚 Sources")
+    st.markdown(
+        "### 📚 Sources"
+    )
 
     for source in sources:
 
@@ -639,12 +776,14 @@ def render_context(chunks):
                 f"— Page {chunk['page']}**"
             )
 
+
             st.progress(
                 min(
                     max(score, 0.0),
                     1.0,
                 )
             )
+
 
             st.write(
                 chunk["text"]
@@ -709,15 +848,19 @@ def retrieve_with_filters(
         similarity_threshold=threshold,
     )
 
+
     if category != "All Categories":
 
-        raw_category = category_key(category)
+        raw_category = category_key(
+            category
+        )
 
         retrieved = [
             item
             for item in retrieved
             if item["category"] == raw_category
         ]
+
 
     if document != "All Documents":
 
@@ -727,6 +870,7 @@ def retrieve_with_filters(
             if item["filename"] == document
         ]
 
+
     retrieved = sorted(
         retrieved,
         key=lambda item: float(
@@ -734,6 +878,7 @@ def retrieve_with_filters(
         ),
         reverse=True,
     )
+
 
     return retrieved[:top_k]
 
@@ -785,7 +930,9 @@ with tab_chat:
                 ):
 
                     st.session_state.pending_question = question
+
                     st.rerun()
+
 
     # --------------------------------------------------------
     # DISPLAY CHAT HISTORY
@@ -817,6 +964,7 @@ with tab_chat:
                         message["sources"]
                     )
 
+
     # --------------------------------------------------------
     # INPUT
     # --------------------------------------------------------
@@ -825,10 +973,13 @@ with tab_chat:
         "Ask a question about the hospital knowledge base..."
     )
 
+
     if st.session_state.pending_question:
 
         question = st.session_state.pending_question
+
         st.session_state.pending_question = None
+
 
     # --------------------------------------------------------
     # PROCESS QUESTION
@@ -846,6 +997,7 @@ with tab_chat:
 
             st.stop()
 
+
         st.session_state.chat_history.append(
             {
                 "role": "user",
@@ -853,11 +1005,13 @@ with tab_chat:
             }
         )
 
+
         with st.chat_message("user"):
 
             st.markdown(
                 question
             )
+
 
         with st.chat_message("assistant"):
 
@@ -873,12 +1027,14 @@ with tab_chat:
                     similarity_threshold,
                 )
 
+
             if not retrieved_chunks:
 
                 answer = (
                     "I could not find this information in the "
                     "hospital knowledge base."
                 )
+
 
             else:
 
@@ -900,9 +1056,11 @@ with tab_chat:
                         "the language model request failed."
                     )
 
+
             st.markdown(
                 answer
             )
+
 
             if retrieved_chunks:
 
@@ -917,6 +1075,7 @@ with tab_chat:
                 render_context(
                     retrieved_chunks
                 )
+
 
         st.session_state.chat_history.append(
             {
@@ -937,15 +1096,18 @@ with tab_explore:
         "🗂️ Explore Knowledge Base"
     )
 
+
     st.write(
         "Browse the documents currently indexed in the hospital knowledge base."
     )
+
 
     for category in CATEGORIES:
 
         category_documents = get_documents_for_category(
             category
         )
+
 
         with st.expander(
             f"{cat_icon(category)} {category} "
@@ -958,6 +1120,7 @@ with tab_explore:
                 st.caption(
                     "No documents found in this category."
                 )
+
 
             else:
 
@@ -977,6 +1140,7 @@ with tab_about:
     st.subheader(
         "ℹ️ About This Assistant"
     )
+
 
     st.markdown(
         """
@@ -1003,8 +1167,11 @@ with tab_about:
         """
     )
 
+
     st.divider()
 
+
     st.caption(
-        f"Knowledge base loaded at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        f"Knowledge base loaded at "
+        f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
