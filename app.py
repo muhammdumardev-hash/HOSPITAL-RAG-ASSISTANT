@@ -1175,3 +1175,6 @@ with tab_about:
         f"Knowledge base loaded at "
         f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
+
+
+1 last changing i also need that kay  jab bhi new reply generate ho AI ki traf say to screen phir us reply ki traf chali jai jaisy GPT main hot
